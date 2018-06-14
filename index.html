@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <link href="./css/cornerstone.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <input class="col-sm-8" type="text" id="wadoURL" placeholder="Enter WADO URL" value="http://127.0.0.1/testDICOM/CTStudy/1.5191KB.DCM">
+                <button class="col-sm-3 btn" type="button" id="downloadAndView">Download and View</button>
+            </div>
+            <div id="loadProgress">Image Load Progress:</div>
+            <div style="width:512px; height:512px; position:relative; color:white; display:inline-block; border-style:solid; border-color:black;"
+                oncontextmenu="return false" class='disable-selection noIbar' unselectable='on' onselectstart='return false;'
+                onmousedown='return false;'>
+                <div id="dicomImage" style="width:512px;height:512px;top:0px;left:0px; position:absolute">
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <!-- 引入 cornerstone 库 -->
+    <script src="./js/cornerstone.min.js"></script>
+    <!-- <script src="./js/cornerstoneMath.min.js"></script> -->
+    <!-- <script src="./js/cornerstoneTools.min.js"></script> -->
+    <!-- include the dicomParser library as the WADO image loader depends on it -->
+    <script src="./js/dicomParser.min.js"></script>
+    <!-- <script src="./js/uids.js"></script> -->
+    <!-- Lines ONLY required for this example to run without building the project -->
+    <script src="../ImageLoader/cornerstoneWADOImageLoader.js"></script>
+    <script>
+        var loaded = false;
+        cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+        // 加载和显示图像
+        function loadAndViewImage(imageId) {
+            var element = document.getElementById('dicomImage');
+            cornerstone.loadAndCacheImage(imageId).then(function (image) {
+                var viewport = cornerstone.getDefaultViewportForImage(element, image);
+                cornerstone.displayImage(element, image, viewport);
+            }, function (err) {
+                alert(err);
+                console.log(err);
+            });
+
+        }
+
+        var element = document.getElementById('dicomImage');
+        cornerstone.enable(element);
+
+        // 监听 downloadAndView 按钮 拼接url 调用 loadAndViewImage 函数
+        document.getElementById('downloadAndView').addEventListener('click', function (e) {
+            let url = document.getElementById('wadoURL').value;
+            // 拼接url
+            url = "wadouri:" + url;
+            // 调用这个函数加载像,和激活工具
+            loadAndViewImage(url);
+        });
+
+        // Dicom 加载 进度
+        cornerstone.events.addEventListener('cornerstoneimageloadprogress', function (event) {
+            const eventData = event.detail;
+            const loadProgress = document.getElementById('loadProgress');
+            loadProgress.textContent = `Image Load Progress: ${eventData.percentComplete}%`;
+        });
+    </script>
+
+
+</html>
