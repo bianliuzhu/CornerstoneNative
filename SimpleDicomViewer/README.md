@@ -2,7 +2,7 @@
 
 * 极简化 基于 Cornerstone.js 实现 Dicom Parser &Display 的应用程序
 
-* 需要http 或 https 路径 才能运行
+* 需要http 或 https 远程路径 才能运行
 
 * 搭建运行环境 :
   * 1.安装 XAMPP 
